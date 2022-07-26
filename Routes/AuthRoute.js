@@ -1,9 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const authController = require("../Controllers/authController");
-
+const auth = require("../middleware/auth");
+const authAdmin = require("../middleware/authAdmin");
 router.post("/signup", authController.SignUp);
 router.post("/Validate", authController.activateEmail);
 router.post("/Login", authController.login);
 router.post("/refresh_token", authController.getAccessToken);
+router.post("/ForgotPass", authController.forgotPassword);
 module.exports = router;

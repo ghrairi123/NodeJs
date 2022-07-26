@@ -313,7 +313,7 @@ Grâce à des fonctionnalités conçues pour faciliter les achats professionnels
 </html>
                    `,
   };
-
+  
   smtpTransport.sendMail(mailOptions, (err, infor) => {
     if (err) return err;
     return infor;

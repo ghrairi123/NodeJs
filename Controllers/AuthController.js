@@ -106,6 +106,39 @@ exports.getAccessToken = (req, res) => {
     return res.status(500).json({ msg: err.message });
   }
 };
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ msg: "Cet e-mail n'existe pas." });
+    const access_token = createAccessToken({ id: user._id });
+    const url = `${CLIENT_URL}/user/reset/${access_token}`;
+    senEmail(email, url, "réinitialisez votre mot de passe");
+    res.json({
+      msg: "Renvoyez le mot de passe, veuillez vérifier votre e-mail.",
+    });
+  } catch (err) {
+    return res.status(500).json({ msg: err.message });
+  }
+};
+exports.resetPassword = async (req, res) => {
+  try {
+    const { password } = req.body;
+    console.log(password);
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    await User.findOneAndUpdate(
+      { _id: req.user.id },
+      {
+        password: passwordHash,
+      }
+    );
+
+    res.json({ msg: "Password successfully changed!" });
+  } catch (err) {
+    return res.status(500).json({ msg: err.message });
+  }
+};
 function validateEmail(email) {
   const re =
     /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
